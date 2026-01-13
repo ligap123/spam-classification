@@ -8,12 +8,25 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+# 确保项目根目录在sys.path中
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
-from src.agent import SpamAgent
-from src.components import analysis_card, comparison_card, model_selector
-from src.models import SpamClassifier
+# 尝试不同的导入方式，提高兼容性
+try:
+    from src.agent import SpamAgent
+    from src.components import analysis_card, comparison_card, model_selector
+    from src.models import SpamClassifier
+except ImportError:
+    # 如果src.xxx导入失败，尝试直接从当前目录导入
+    try:
+        from agent import SpamAgent
+        from components import analysis_card, comparison_card, model_selector
+        from models import SpamClassifier
+    except ImportError as e:
+        st.error(f"导入模块失败: {e}")
+        st.stop()
 
 st.set_page_config(
     page_title="垃圾短信分类系统",
